@@ -25,13 +25,21 @@ MODEL = "gemini-2.5-flash"
 
 system_message = """
 You are a helpful assistant for an Airline called Airticket.
-Give short, courteous answers, no more than 2 sentences.
+Give short, courteous answers, no more than 2 sentences. 
+When a user asks about flight prices or tickets, ALWAYS respond with prices 
+broken down by class in this format:
+Flight: [ORIGIN] → [DESTINATION]
+Economy Class: ₦[price] / $[price]
+Business Class: ₦[price] / $[price]  
+First Class: ₦[price] / $[price]
+Estimated Duration: [duration]
+Airlines that fly this route: [airlines]
 Always be accurate. Make sure you thoroughly check for the available ticket price for all airlines.
 If you don't know the answer, say so. If no flights are found, suggest alternative dates or nearby airports.
 Always use IATA airport codes when searching for flights.
 """
 
-# ---- DEMO FUNCTION ----
+# DEMO FUNCTION for testing
 def get_ticket_price(destination_city):
     prices = {
         "London": "$850",
@@ -41,7 +49,7 @@ def get_ticket_price(destination_city):
     return prices.get(destination_city, "Price not available")
 
 
-# ---- LIVE FLIGHT PRICES via RapidAPI Booking.com ----
+#LIVE FLIGHT PRICES via RapidAPI Booking.com
 def get_flight_prices(origin, destination, date, return_date=None):
     # Default return date to 7 days after departure if not provided
     if not return_date:
@@ -111,7 +119,7 @@ def get_flight_prices(origin, destination, date, return_date=None):
         return f"Error fetching flights: {str(e)}"
 
 
-# ---- TOOL 1 ----
+#TOOL 1 
 price_function = {
     "name": "get_ticket_price",
     "description": "Use this function to get the exact return ticket price for a destination city. Always use this when asked about ticket prices.",
@@ -128,7 +136,7 @@ price_function = {
     }
 }
 
-# ---- TOOL 2 ----
+# TOOL 2 
 flight_price_function = {
     "name": "get_flight_prices",
     "description": "Search for live roundtrip flight prices between two cities and recommend the cheapest options",
@@ -162,7 +170,7 @@ tools = [
     {"type": "function", "function": flight_price_function}
 ]
 
-# ---- FASTAPI SETUP ----
+# FASTAPI SETUP 
 app = FastAPI()
 
 app.add_middleware(
@@ -177,7 +185,7 @@ chat_history = []
 class ChatRequest(BaseModel):
     message: str
 
-# ---- CHAT ENDPOINT ----
+# API CHAT ENDPOINT 
 @app.post("/chat")
 def chat(req: ChatRequest):
     global chat_history
