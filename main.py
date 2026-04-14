@@ -21,7 +21,7 @@ client = OpenAI(
     api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-MODEL = "gemini-2.0-flash"
+MODEL = "gemini-2.5-flash"
 
 system_message = """
 You are a helpful assistant for an Airline called Airticket.
